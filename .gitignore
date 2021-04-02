@@ -28,6 +28,8 @@ Examples/ROS/ORB_SLAM3/Stereo_Inertial
 Examples/ROS/ORB_SLAM3/CMakeLists.txt.user
 Examples/ROS/ORB_SLAM3/build/
 
+orb.txt
+orb_keyframes.txt
 KeyFrameTrajectory.txt
 CameraTrajectory.txt
 kf_*.txt
