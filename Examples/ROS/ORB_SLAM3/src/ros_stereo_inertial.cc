@@ -27,14 +27,20 @@
 
 #include<ros/ros.h>
 #include<cv_bridge/cv_bridge.h>
+#include <nav_msgs/Odometry.h>
+#include <nav_msgs/Path.h>
 #include<sensor_msgs/Imu.h>
 
 #include<opencv2/core/core.hpp>
 
 #include"../../../include/System.h"
 #include"../include/ImuTypes.h"
+#include "../include/Converter.h"
 
 using namespace std;
+
+ros::Publisher pub_path;
+nav_msgs::Path path;
 
 class ImuGrabber
 {
@@ -76,6 +82,8 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "Stereo_Inertial");
   ros::NodeHandle n("~");
   ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info);
+  pub_path = n.advertise<nav_msgs::Path>("path", 1000);
+
   bool bEqual = false;
   if(argc < 4 || argc > 5)
   {
@@ -93,7 +101,7 @@ int main(int argc, char **argv)
   }
 
   // Create SLAM system. It initializes all system threads and gets ready to process frames.
-  const bUseViewer = false;
+  const bool bUseViewer = true;
   ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::IMU_STEREO,bUseViewer);
 
   ImuGrabber imugb;
@@ -277,7 +285,45 @@ void ImageGrabber::SyncWithImu()
         cv::remap(imRight,imRight,M1r,M2r,cv::INTER_LINEAR);
       }
 
-      mpSLAM->TrackStereo(imLeft,imRight,tImLeft,vImuMeas);
+      // Track with stereo images. Get new estimate for camera_from_world transform.
+      const cv::Mat Tcw = mpSLAM->TrackStereo(imLeft,imRight,tImLeft,vImuMeas);
+
+      if (!Tcw.empty()) {
+        // Get quaternion representation for camera_from_world rotation.
+        const std::vector<float> orientation = ORB_SLAM3::Converter::toQuaternion(Tcw);
+
+        // Make a header for some of the ROS messages.
+        std_msgs::Header header;
+        const std::string fixed_frame_id = "world";
+        header.frame_id = fixed_frame_id;
+
+        // Create the odometry message to pack inside the path message.
+        nav_msgs::Odometry odometry;
+        odometry.header = header;
+        odometry.header.frame_id = fixed_frame_id;
+        odometry.child_frame_id = fixed_frame_id;
+        odometry.pose.pose.position.x = Tcw.at<float>(0, 3);
+        odometry.pose.pose.position.y = Tcw.at<float>(1, 3);
+        odometry.pose.pose.position.z = Tcw.at<float>(2, 3);
+        odometry.pose.pose.orientation.x = orientation[0];
+        odometry.pose.pose.orientation.y = orientation[1];
+        odometry.pose.pose.orientation.z = orientation[2];
+        odometry.pose.pose.orientation.w = orientation[3];
+
+        // Create the pose message to pack inside the path message.
+        geometry_msgs::PoseStamped pose_stamped;
+        pose_stamped.header = header;
+        pose_stamped.header.frame_id = fixed_frame_id;
+        pose_stamped.pose = odometry.pose.pose;
+
+        // Create the path message.
+        path.header = header;
+        path.header.frame_id = fixed_frame_id;
+        path.poses.push_back(pose_stamped);
+
+        // Publish the path message.
+        pub_path.publish(path);
+      }
 
       std::chrono::milliseconds tSleep(1);
       std::this_thread::sleep_for(tSleep);
