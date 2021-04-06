@@ -294,6 +294,7 @@ void ImageGrabber::SyncWithImu()
 
         // Make a header for some of the ROS messages.
         std_msgs::Header header;
+        header.stamp = ros::Time(tImLeft);
         const std::string fixed_frame_id = "world";
         header.frame_id = fixed_frame_id;
 
