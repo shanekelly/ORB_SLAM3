@@ -914,6 +914,7 @@ cv::Mat Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRe
     cv::Mat imGrayRight = imRectRight;
     mImRight = imRectRight;
 
+    // Convert RGB to gray.
     if(mImGray.channels()==3)
     {
         if(mbRGB)
@@ -927,6 +928,7 @@ cv::Mat Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRe
             cvtColor(imGrayRight,imGrayRight,CV_BGR2GRAY);
         }
     }
+    // Convert RGBA to gray.
     else if(mImGray.channels()==4)
     {
         if(mbRGB)
@@ -1906,6 +1908,7 @@ void Tracking::Track()
 
 void Tracking::StereoInitialization()
 {
+    cout << "mCurrentFrame.N: " << mCurrentFrame.N << endl;
     if(mCurrentFrame.N>500)
     {
         if (mSensor == System::IMU_STEREO)

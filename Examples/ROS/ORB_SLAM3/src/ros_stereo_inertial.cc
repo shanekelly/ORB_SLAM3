@@ -76,6 +76,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "Stereo_Inertial");
   ros::NodeHandle n("~");
   ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info);
+
   bool bEqual = false;
   if(argc < 4 || argc > 5)
   {
@@ -98,44 +99,44 @@ int main(int argc, char **argv)
   ImuGrabber imugb;
   ImageGrabber igb(&SLAM,&imugb,sbRect == "true",bEqual);
   
-    if(igb.do_rectify)
-    {      
-        // Load settings related to stereo calibration
-        cv::FileStorage fsSettings(argv[2], cv::FileStorage::READ);
-        if(!fsSettings.isOpened())
-        {
-            cerr << "ERROR: Wrong path to settings" << endl;
-            return -1;
-        }
-
-        cv::Mat K_l, K_r, P_l, P_r, R_l, R_r, D_l, D_r;
-        fsSettings["LEFT.K"] >> K_l;
-        fsSettings["RIGHT.K"] >> K_r;
-
-        fsSettings["LEFT.P"] >> P_l;
-        fsSettings["RIGHT.P"] >> P_r;
-
-        fsSettings["LEFT.R"] >> R_l;
-        fsSettings["RIGHT.R"] >> R_r;
-
-        fsSettings["LEFT.D"] >> D_l;
-        fsSettings["RIGHT.D"] >> D_r;
-
-        int rows_l = fsSettings["LEFT.height"];
-        int cols_l = fsSettings["LEFT.width"];
-        int rows_r = fsSettings["RIGHT.height"];
-        int cols_r = fsSettings["RIGHT.width"];
-
-        if(K_l.empty() || K_r.empty() || P_l.empty() || P_r.empty() || R_l.empty() || R_r.empty() || D_l.empty() || D_r.empty() ||
-                rows_l==0 || rows_r==0 || cols_l==0 || cols_r==0)
-        {
-            cerr << "ERROR: Calibration parameters to rectify stereo are missing!" << endl;
-            return -1;
-        }
-
-        cv::initUndistortRectifyMap(K_l,D_l,R_l,P_l.rowRange(0,3).colRange(0,3),cv::Size(cols_l,rows_l),CV_32F,igb.M1l,igb.M2l);
-        cv::initUndistortRectifyMap(K_r,D_r,R_r,P_r.rowRange(0,3).colRange(0,3),cv::Size(cols_r,rows_r),CV_32F,igb.M1r,igb.M2r);
+  if(igb.do_rectify)
+  {      
+    // Load settings related to stereo calibration
+    cv::FileStorage fsSettings(argv[2], cv::FileStorage::READ);
+    if(!fsSettings.isOpened())
+    {
+        cerr << "ERROR: Wrong path to settings" << endl;
+        return -1;
     }
+
+    cv::Mat K_l, K_r, P_l, P_r, R_l, R_r, D_l, D_r;
+    fsSettings["LEFT.K"] >> K_l;
+    fsSettings["RIGHT.K"] >> K_r;
+
+    fsSettings["LEFT.P"] >> P_l;
+    fsSettings["RIGHT.P"] >> P_r;
+
+    fsSettings["LEFT.R"] >> R_l;
+    fsSettings["RIGHT.R"] >> R_r;
+
+    fsSettings["LEFT.D"] >> D_l;
+    fsSettings["RIGHT.D"] >> D_r;
+
+    int rows_l = fsSettings["LEFT.height"];
+    int cols_l = fsSettings["LEFT.width"];
+    int rows_r = fsSettings["RIGHT.height"];
+    int cols_r = fsSettings["RIGHT.width"];
+
+    if(K_l.empty() || K_r.empty() || P_l.empty() || P_r.empty() || R_l.empty() || R_r.empty() || D_l.empty() || D_r.empty() ||
+            rows_l==0 || rows_r==0 || cols_l==0 || cols_r==0)
+    {
+        cerr << "ERROR: Calibration parameters to rectify stereo are missing!" << endl;
+        return -1;
+    }
+
+    cv::initUndistortRectifyMap(K_l,D_l,R_l,P_l.rowRange(0,3).colRange(0,3),cv::Size(cols_l,rows_l),CV_32F,igb.M1l,igb.M2l);
+    cv::initUndistortRectifyMap(K_r,D_r,R_r,P_r.rowRange(0,3).colRange(0,3),cv::Size(cols_r,rows_r),CV_32F,igb.M1r,igb.M2r);
+  }
 
   // Maximum delay, 5 seconds
   ros::Subscriber sub_imu = n.subscribe("/imu", 1000, &ImuGrabber::GrabImu, &imugb); 
@@ -200,11 +201,16 @@ void ImageGrabber::SyncWithImu()
   {
     cv::Mat imLeft, imRight;
     double tImLeft = 0, tImRight = 0;
+
+    // If all queues have data.
     if (!imgLeftBuf.empty()&&!imgRightBuf.empty()&&!mpImuGb->imuBuf.empty())
     {
+      // Get the timestamps of the two images at the front of the queues.
       tImLeft = imgLeftBuf.front()->header.stamp.toSec();
       tImRight = imgRightBuf.front()->header.stamp.toSec();
 
+      // Remove all right images from the queue that happened before 0.01 seconds after the left
+      // image, but don't remove the last image if you get there.
       this->mBufMutexRight.lock();
       while((tImLeft-tImRight)>maxTimeDiff && imgRightBuf.size()>1)
       {
@@ -213,6 +219,8 @@ void ImageGrabber::SyncWithImu()
       }
       this->mBufMutexRight.unlock();
 
+      // Remove all left images from the queue that happened before 0.01 seconds after the right
+      // image, but don't remove the last image if you get there.
       this->mBufMutexLeft.lock();
       while((tImRight-tImLeft)>maxTimeDiff && imgLeftBuf.size()>1)
       {
@@ -221,11 +229,14 @@ void ImageGrabber::SyncWithImu()
       }
       this->mBufMutexLeft.unlock();
 
+      // Continue if time difference it too great.
       if((tImLeft-tImRight)>maxTimeDiff || (tImRight-tImLeft)>maxTimeDiff)
       {
         // std::cout << "big time difference" << std::endl;
         continue;
       }
+
+      // Continue if left image is more recent than oldest IMU reading.
       if(tImLeft>mpImuGb->imuBuf.back()->header.stamp.toSec())
           continue;
 
@@ -243,7 +254,7 @@ void ImageGrabber::SyncWithImu()
       mpImuGb->mBufMutex.lock();
       if(!mpImuGb->imuBuf.empty())
       {
-        // Load imu measurements from buffer
+        // Push all IMU measurements from buffer that are not newer than the left image into a vector.
         vImuMeas.clear();
         while(!mpImuGb->imuBuf.empty() && mpImuGb->imuBuf.front()->header.stamp.toSec()<=tImLeft)
         {

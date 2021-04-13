@@ -275,6 +275,27 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const
     // std::cout << "start GrabImageStereo" << std::endl;
     cv::Mat Tcw = mpTracker->GrabImageStereo(imLeft,imRight,timestamp,filename);
 
+    // IMU initialization debugging?
+    /*
+    if(mpLocalMapper->mbNewInit)
+    {
+        // Save data
+        SaveDebugData(mpLocalMapper->mIdxInit);
+        mpLocalMapper->mbNewInit=false;
+        // Check if reset
+        {
+            unique_lock<mutex> lock(mMutexReset);
+            if(mpLocalMapper->mInitTime>10.0)
+            {
+                mpTracker->Reset();
+                mbReset = false;
+                mbResetActiveMap = false;
+                mpLocalMapper->mInitSect++;
+            }
+        }
+    }
+    */
+
     // std::cout << "out grabber" << std::endl;
 
     unique_lock<mutex> lock2(mMutexState);
