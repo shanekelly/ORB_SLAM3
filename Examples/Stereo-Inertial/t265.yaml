@@ -28,7 +28,7 @@ Camera2.k1: -0.0018033110536634922
 Camera2.k2: 0.03722317889332771
 Camera2.k3: -0.03512553870677948
 Camera2.k4: 0.0057324911467731
-    
+
 # Transformation matrix from right camera to left camera
 Tlr: !!opencv-matrix
   rows: 3
@@ -49,7 +49,7 @@ Camera2.lappingEnd: 847
 Camera.width: 848
 Camera.height: 800
 
-# Camera frames per second 
+# Camera frames per second
 Camera.fps: 20.0
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
@@ -71,10 +71,10 @@ Tbc: !!opencv-matrix
            0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  1.00000000e+00]
 
 # IMU noise (Use those from VINS-mono)
-IMU.NoiseGyro: 0.00016 # 0.004 (VINS) # 0.00016 (TUM) # 0.00016    # rad/s^0.5 
-IMU.NoiseAcc: 0.0028 # 0.04 (VINS) # 0.0028 (TUM) # 0.0028     # m/s^1.5
-IMU.GyroWalk: 0.000022 # 0.000022 (VINS and TUM) rad/s^1.5
-IMU.AccWalk: 0.00086 # 0.0004 (VINS) # 0.00086 # 0.00086    # m/s^2.5
+IMU.NoiseGyro: 2.268e-01 # 0.004 (VINS) # 0.00016 (TUM) # 0.00016    # rad/s^0.5
+IMU.NoiseAcc:  8.182e-01 # 0.04 (VINS) # 0.0028 (TUM) # 0.0028     # m/s^1.5
+IMU.GyroWalk:  7.071e-02 # 0.000022 (VINS and TUM) rad/s^1.5
+IMU.AccWalk:   9.999e-01 # 0.0004 (VINS) # 0.00086 # 0.00086    # m/s^2.5
 IMU.Frequency: 200
 
 #--------------------------------------------------------------------------------------------
@@ -84,16 +84,16 @@ IMU.Frequency: 200
 # ORB Extractor: Number of features per image
 ORBextractor.nFeatures: 1000 # Tested with 1250
 
-# ORB Extractor: Scale factor between levels in the scale pyramid 	
+# ORB Extractor: Scale factor between levels in the scale pyramid
 ORBextractor.scaleFactor: 1.2
 
-# ORB Extractor: Number of levels in the scale pyramid	
+# ORB Extractor: Number of levels in the scale pyramid
 ORBextractor.nLevels: 8
 
 # ORB Extractor: Fast threshold
 # Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
 # Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
-# You can lower these values if your images have low contrast			
+# You can lower these values if your images have low contrast
 ORBextractor.iniThFAST: 20 # 20
 ORBextractor.minThFAST: 7 # 7
 

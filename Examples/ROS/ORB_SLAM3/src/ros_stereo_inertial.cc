@@ -64,7 +64,7 @@ public:
 
     queue<sensor_msgs::ImageConstPtr> imgLeftBuf, imgRightBuf;
     std::mutex mBufMutexLeft,mBufMutexRight;
-   
+
     ORB_SLAM3::System* mpSLAM;
     ImuGrabber *mpImuGb;
 
@@ -106,9 +106,9 @@ int main(int argc, char **argv)
 
   ImuGrabber imugb;
   ImageGrabber igb(&SLAM,&imugb,sbRect == "true",bEqual);
-  
+
     if(igb.do_rectify)
-    {      
+    {
         // Load settings related to stereo calibration
         cv::FileStorage fsSettings(argv[2], cv::FileStorage::READ);
         if(!fsSettings.isOpened())
@@ -147,7 +147,7 @@ int main(int argc, char **argv)
     }
 
   // Maximum delay, 5 seconds
-  ros::Subscriber sub_imu = n.subscribe("/imu", 1000, &ImuGrabber::GrabImu, &imugb); 
+  ros::Subscriber sub_imu = n.subscribe("/imu", 1000, &ImuGrabber::GrabImu, &imugb);
   ros::Subscriber sub_img_left = n.subscribe("/camera/left/image_raw", 100, &ImageGrabber::GrabImageLeft,&igb);
   ros::Subscriber sub_img_right = n.subscribe("/camera/right/image_raw", 100, &ImageGrabber::GrabImageRight,&igb);
 
@@ -160,7 +160,7 @@ int main(int argc, char **argv)
 
   // Save camera trajectory
   // SLAM.SaveKeyFrameTrajectoryTUM("trajectory/tum/orb_keyframes.txt");
-  SLAM.SaveTrajectoryTUM("trajectory/tum/orb.txt");
+  SLAM.SaveTrajectoryTUM("orb.txt");
 
   ros::shutdown();
 
@@ -199,7 +199,7 @@ cv::Mat ImageGrabber::GetImage(const sensor_msgs::ImageConstPtr &img_msg)
   {
     ROS_ERROR("cv_bridge exception: %s", e.what());
   }
-  
+
   if(cv_ptr->image.type()==0)
   {
     return cv_ptr->image.clone();
@@ -339,5 +339,3 @@ void ImuGrabber::GrabImu(const sensor_msgs::ImuConstPtr &imu_msg)
   mBufMutex.unlock();
   return;
 }
-
-
