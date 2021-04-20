@@ -231,6 +231,7 @@ int main(int argc, char **argv)
     {
         SLAM.SaveTrajectoryEuRoC("results/CameraTrajectory.txt");
         SLAM.SaveKeyFrameTrajectoryEuRoC("results/KeyFrameTrajectory.txt");
+        SLAM.SaveMapPoints("results/MapPoints.txt");
     }
 
     return 0;
