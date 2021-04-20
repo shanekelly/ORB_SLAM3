@@ -225,7 +225,7 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const
     {
         cerr << "ERROR: you called TrackStereo but input sensor was not set to Stereo nor Stereo-Inertial." << endl;
         exit(-1);
-    }   
+    }
 
     // Check mode change
     {
@@ -312,7 +312,7 @@ cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const doub
     {
         cerr << "ERROR: you called TrackRGBD but input sensor was not set to RGBD." << endl;
         exit(-1);
-    }    
+    }
 
     // Check mode change
     {
@@ -876,6 +876,24 @@ void System::SaveDebugData(const int &initIdx)
 }
 
 
+void System::SaveMapPoints(const string &filename)
+{
+  cout << endl << "Saving trajectory to " << filename << " ..." << endl;
+
+  ofstream f;
+  f.open(filename.c_str());
+  f << fixed;
+  const std::vector<MapPoint*> map_points = mpAtlas->GetAllMapPoints();
+  for (MapPoint* map_point : map_points) {
+    cv::Mat world_pos = map_point->GetWorldPos();
+    f << setprecision(9) << world_pos.at<float>(0) << " " << world_pos.at<float>(1) << " " << world_pos.at<float>(2) << endl;
+  }
+  f.close();
+
+  cout << endl << "End of saving trajectory to " << filename << " ..." << endl;
+}
+
+
 int System::GetTrackingState()
 {
     unique_lock<mutex> lock(mMutexState);
@@ -1086,5 +1104,3 @@ string System::CalculateCheckSum(string filename, int type)
 }*/
 
 } //namespace ORB_SLAM
-
-

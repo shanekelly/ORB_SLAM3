@@ -154,6 +154,8 @@ public:
     // Save data used for initialization debug
     void SaveDebugData(const int &iniIdx);
 
+    void SaveMapPoints(const string &filename);
+
     // Save camera trajectory in the KITTI dataset format.
     // Only for stereo and RGB-D. This method does not work for monocular.
     // Call first Shutdown()
