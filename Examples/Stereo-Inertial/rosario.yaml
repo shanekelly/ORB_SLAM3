@@ -19,7 +19,7 @@ Camera.p2: 0.0
 Camera.width: 672
 Camera.height: 376
 
-# Camera frames per second 
+# Camera frames per second
 Camera.fps: 15.0
 
 # stereo baseline times fx
@@ -42,7 +42,7 @@ Tbc: !!opencv-matrix
           0.,          0.,          0.,          1.]
 
 # IMU noise
-IMU.NoiseGyro: 0.00016968 # 1.6968e-04 
+IMU.NoiseGyro: 0.00016968 # 1.6968e-04
 IMU.NoiseAcc: 0.002 # 2.0000e-3
 IMU.GyroWalk: 0.000019393
 IMU.AccWalk: 0.003 # 3.0000e-3
@@ -124,16 +124,16 @@ RIGHT.P:  !!opencv-matrix
 # ORB Extractor: Number of features per image
 ORBextractor.nFeatures: 1200
 
-# ORB Extractor: Scale factor between levels in the scale pyramid 	
+# ORB Extractor: Scale factor between levels in the scale pyramid
 ORBextractor.scaleFactor: 1.2
 
-# ORB Extractor: Number of levels in the scale pyramid	
+# ORB Extractor: Number of levels in the scale pyramid
 ORBextractor.nLevels: 8
 
 # ORB Extractor: Fast threshold
 # Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
 # Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
-# You can lower these values if your images have low contrast			
+# You can lower these values if your images have low contrast
 ORBextractor.iniThFAST: 20
 ORBextractor.minThFAST: 7
 
@@ -150,4 +150,3 @@ Viewer.ViewpointX: 0
 Viewer.ViewpointY: -0.7
 Viewer.ViewpointZ: -1.8
 Viewer.ViewpointF: 500
-
