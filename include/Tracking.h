@@ -54,7 +54,7 @@ class LoopClosing;
 class System;
 
 class Tracking
-{  
+{
 
 public:
     Tracking(System* pSys, ORBVocabulary* pVoc, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Atlas* pAtlas,
@@ -252,10 +252,10 @@ protected:
     KeyFrame* mpReferenceKF;
     std::vector<KeyFrame*> mvpLocalKeyFrames;
     std::vector<MapPoint*> mvpLocalMapPoints;
-    
+
     // System
     System* mpSystem;
-    
+
     //Drawers
     Viewer* mpViewer;
     FrameDrawer* mpFrameDrawer;
@@ -327,6 +327,9 @@ protected:
     int initID, lastID;
 
     cv::Mat mTlr;
+
+    cv::Mat mMaskL;  // Image mask for left camera.
+    cv::Mat mMaskR;  // Image mask for right camera.
 
 public:
     cv::Mat mImRight;

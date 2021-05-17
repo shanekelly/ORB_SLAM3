@@ -704,6 +704,7 @@ bool Tracking::ParseORBParamFile(cv::FileStorage &fSettings)
     bool b_miss_params = false;
     int nFeatures, nLevels, fIniThFAST, fMinThFAST;
     float fScaleFactor;
+    string maskLFname, maskRFname;
 
     cv::FileNode node = fSettings["ORBextractor.nFeatures"];
     if(!node.empty() && node.isInt())
@@ -758,6 +759,30 @@ bool Tracking::ParseORBParamFile(cv::FileStorage &fSettings)
     {
         std::cerr << "*ORBextractor.minThFAST parameter doesn't exist or is not an integer*" << std::endl;
         b_miss_params = true;
+    }
+
+    node = fSettings["ORBextractor.maskLFname"];
+    if(!node.empty() && node.isString())
+    {
+        maskLFname = node.operator std::string();
+        mMaskL = cv::imread(maskLFname, CV_LOAD_IMAGE_GRAYSCALE);
+        cv::threshold(mMaskL, mMaskL, 127, 255, CV_THRESH_BINARY);
+    }
+    else
+    {
+        std::cerr << "*ORBextractor.maskLFname parameter doesn't exist or is not a string*" << std::endl;
+    }
+
+    node = fSettings["ORBextractor.maskRFname"];
+    if(!node.empty() && node.isString())
+    {
+        maskRFname = node.operator std::string();
+        mMaskR = cv::imread(maskRFname, CV_LOAD_IMAGE_GRAYSCALE);
+        cv::threshold(mMaskR, mMaskR, 127, 255, CV_THRESH_BINARY);
+    }
+    else
+    {
+        std::cerr << "*ORBextractor.maskRFname parameter doesn't exist or is not a string*" << std::endl;
     }
 
     if(b_miss_params)
