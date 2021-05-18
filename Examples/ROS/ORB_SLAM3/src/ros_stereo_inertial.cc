@@ -159,8 +159,8 @@ int main(int argc, char **argv)
   SLAM.Shutdown();
 
   // Save camera trajectory
-  // SLAM.SaveKeyFrameTrajectoryTUM("trajectory/tum/orb_keyframes.txt");
-  SLAM.SaveTrajectoryTUM("orb.txt");
+  // SLAM.SaveKeyFrameTrajectoryTUM("results/orb-k.txt");
+  SLAM.SaveTrajectoryTUM("results/orb.txt");
 
   ros::shutdown();
 

@@ -760,11 +760,14 @@ namespace ORB_SLAM3
         return vResultKeys;
     }
 
-    void ORBextractor::ComputeKeyPointsOctTree(vector<vector<KeyPoint> >& allKeypoints)
+    void ORBextractor::ComputeKeyPointsOctTree(const cv::InputArray& _mask, vector<vector<KeyPoint> >& allKeypoints)
     {
         allKeypoints.resize(nlevels);
 
         const float W = 30;
+
+        const cv::Mat mask = _mask.getMat();
+        const bool maskIsEmpty = mask.empty();
 
         for (int level = 0; level < nlevels; ++level)
         {
@@ -783,6 +786,8 @@ namespace ORB_SLAM3
             const int nRows = height/W;
             const int wCell = ceil(width/nCols);
             const int hCell = ceil(height/nRows);
+
+            const float scale = mvScaleFactor[level];
 
             for(int i=0; i<nRows; i++)
             {
@@ -842,12 +847,24 @@ namespace ORB_SLAM3
 
                     if(!vKeysCell.empty())
                     {
-                        for(vector<cv::KeyPoint>::iterator vit=vKeysCell.begin(); vit!=vKeysCell.end();vit++)
-                        {
-                            (*vit).pt.x+=j*wCell;
-                            (*vit).pt.y+=i*hCell;
+                      for(vector<cv::KeyPoint>::iterator vit=vKeysCell.begin(); vit!=vKeysCell.end();vit++)
+                      {
+                        (*vit).pt.x+=j*wCell;
+                        (*vit).pt.y+=i*hCell;
+                        if (maskIsEmpty) {
+                          // There is no image mask, so just accept the feature.
+                          vToDistributeKeys.push_back(*vit);
+                        } else {
+                          // There is an image mask, so only accept the feature if it is within the
+                          // mask.
+                          const int x = (int)std::round(scale*((*vit).pt.x + minBorderX));
+                          const int y = (int)std::round(scale*((*vit).pt.y + minBorderY));
+                          const cv::Scalar intensity = mask.at<uchar>(y, x);
+                          if (intensity[0] == 255) {
                             vToDistributeKeys.push_back(*vit);
+                          }
                         }
+                      }
                     }
 
                 }
@@ -1079,7 +1096,7 @@ namespace ORB_SLAM3
         ComputePyramid(image);
 
         vector < vector<KeyPoint> > allKeypoints;
-        ComputeKeyPointsOctTree(allKeypoints);
+        ComputeKeyPointsOctTree(_mask, allKeypoints);
         //ComputeKeyPointsOld(allKeypoints);
 
         Mat descriptors;

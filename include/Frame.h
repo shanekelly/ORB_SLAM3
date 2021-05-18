@@ -273,6 +273,9 @@ private:
 
     std::mutex *mpMutexImu;
 
+    cv::Mat mMaskL;
+    cv::Mat mMaskR;
+
 public:
     GeometricCamera* mpCamera, *mpCamera2;
 
@@ -296,7 +299,8 @@ public:
 
     cv::Mat mTlr, mRlr, mtlr, mTrl;
 
-    Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeStamp, ORBextractor* extractorLeft, ORBextractor* extractorRight, ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth, GeometricCamera* pCamera, GeometricCamera* pCamera2, cv::Mat& Tlr,Frame* pPrevF = static_cast<Frame*>(NULL), const IMU::Calib &ImuCalib = IMU::Calib());
+    // This is the constructor that is normally used with my sensor configs.
+    Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeStamp, ORBextractor* extractorLeft, ORBextractor* extractorRight, ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth, GeometricCamera* pCamera, GeometricCamera* pCamera2, cv::Mat& Tlr,Frame* pPrevF = static_cast<Frame*>(NULL), const IMU::Calib &ImuCalib = IMU::Calib(), const cv::Mat& maskL = cv::Mat(), const cv::Mat& maskR = cv::Mat());
 
     //Stereo fisheye
     void ComputeStereoFishEyeMatches();

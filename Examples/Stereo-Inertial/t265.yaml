@@ -97,8 +97,8 @@ ORBextractor.nLevels: 8
 ORBextractor.iniThFAST: 20 # 20
 ORBextractor.minThFAST: 7 # 7
 
-ORBextractor.maskLFname: "/home/sgk/eth/research/rowesys-vio/masks/t265_bottom-half-black.png"
-ORBextractor.maskRFname: "/home/sgk/eth/research/rowesys-vio/masks/t265_bottom-half-black.png"
+ORBextractor.maskLFname: "/home/sgk/eth/research/rowesys-vio/masks/t265/45-deg_left_mask.png"
+ORBextractor.maskRFname: "/home/sgk/eth/research/rowesys-vio/masks/t265/45-deg_right_mask.png"
 
 #--------------------------------------------------------------------------------------------
 # Viewer Parameters
