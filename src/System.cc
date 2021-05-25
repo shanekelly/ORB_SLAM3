@@ -72,6 +72,30 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
        exit(-1);
     }
 
+    bool bEnableLoopClosing;
+    const cv::FileNode node = fsSettings["System.EnableLoopClosing"];
+    if(!node.empty() && node.isInt())
+    {
+        const int intEnableLoopClosing = node.operator int();
+        if (intEnableLoopClosing < 0 || 1 < intEnableLoopClosing) {
+          std::stringstream err_msg;
+          err_msg << "System.EnableLoopClosing must be either 0 or 1. Current value: " << intEnableLoopClosing << std::endl;
+          throw std::runtime_error(err_msg.str());
+        }
+        bEnableLoopClosing = intEnableLoopClosing == 0 ? false : true;
+        if (bEnableLoopClosing) {
+          std::cout << "\n*** Enabled loop closing! ***" << std::endl;
+        } else {
+          std::cout << "\n*** Disabled loop closing! ***" << std::endl;
+        }
+    }
+    else
+    {
+        std::stringstream err_msg;
+        err_msg << "System.EnableLoopClosing doesn't exist or is not an integer." << std::endl;
+        throw std::runtime_error(err_msg.str());
+    }
+
     bool loadedAtlas = false;
 
     //----
@@ -191,7 +215,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
     //Initialize the Loop Closing thread and launch
     // mSensor!=MONOCULAR && mSensor!=IMU_MONOCULAR
-    mpLoopCloser = new LoopClosing(mpAtlas, mpKeyFrameDatabase, mpVocabulary, mSensor!=MONOCULAR); // mSensor!=MONOCULAR);
+    mpLoopCloser = new LoopClosing(mpAtlas, mpKeyFrameDatabase, mpVocabulary, mSensor!=MONOCULAR, bEnableLoopClosing); // mSensor!=MONOCULAR);
     mptLoopClosing = new thread(&ORB_SLAM3::LoopClosing::Run, mpLoopCloser);
 
     //Initialize the Viewer thread and launch
@@ -225,7 +249,7 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const
     {
         cerr << "ERROR: you called TrackStereo but input sensor was not set to Stereo nor Stereo-Inertial." << endl;
         exit(-1);
-    }   
+    }
 
     // Check mode change
     {
@@ -291,7 +315,7 @@ cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const doub
     {
         cerr << "ERROR: you called TrackRGBD but input sensor was not set to RGBD." << endl;
         exit(-1);
-    }    
+    }
 
     // Check mode change
     {
@@ -1065,5 +1089,3 @@ string System::CalculateCheckSum(string filename, int type)
 }*/
 
 } //namespace ORB_SLAM
-
-

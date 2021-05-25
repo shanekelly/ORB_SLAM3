@@ -81,6 +81,9 @@ IMU.Frequency: 200
 # ORB Parameters
 #--------------------------------------------------------------------------------------------
 
+# Whether or not to detect and close loops. 1 to enable, 0 to disable.
+System.EnableLoopClosing: 0
+
 # ORB Extractor: Number of features per image
 ORBextractor.nFeatures: 1000 # Tested with 1250
 

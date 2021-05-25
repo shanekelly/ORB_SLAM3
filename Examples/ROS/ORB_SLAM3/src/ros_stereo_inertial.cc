@@ -289,8 +289,11 @@ void ImageGrabber::SyncWithImu()
       const cv::Mat Tcw = mpSLAM->TrackStereo(imLeft,imRight,tImLeft,vImuMeas);
 
       if (!Tcw.empty()) {
+        const Eigen::Matrix<double,4,4> camera_from_world = ORB_SLAM3::Converter::toMatrix4d(Tcw);
+        const Eigen::Matrix<double,4,4> world_from_camera = camera_from_world.inverse();
+
         // Get quaternion representation for camera_from_world rotation.
-        const std::vector<float> orientation = ORB_SLAM3::Converter::toQuaternion(Tcw);
+        const Eigen::Quaterniond world_from_camera_quat{world_from_camera.topLeftCorner<3, 3>()};
 
         // Make a header for some of the ROS messages.
         std_msgs::Header header;
@@ -303,13 +306,13 @@ void ImageGrabber::SyncWithImu()
         odometry.header = header;
         odometry.header.frame_id = fixed_frame_id;
         odometry.child_frame_id = fixed_frame_id;
-        odometry.pose.pose.position.x = Tcw.at<float>(0, 3);
-        odometry.pose.pose.position.y = Tcw.at<float>(1, 3);
-        odometry.pose.pose.position.z = Tcw.at<float>(2, 3);
-        odometry.pose.pose.orientation.x = orientation[0];
-        odometry.pose.pose.orientation.y = orientation[1];
-        odometry.pose.pose.orientation.z = orientation[2];
-        odometry.pose.pose.orientation.w = orientation[3];
+        odometry.pose.pose.position.x = world_from_camera(0, 3);
+        odometry.pose.pose.position.y = world_from_camera(1, 3);
+        odometry.pose.pose.position.z = world_from_camera(2, 3);
+        odometry.pose.pose.orientation.x = world_from_camera_quat.x();
+        odometry.pose.pose.orientation.y = world_from_camera_quat.y();
+        odometry.pose.pose.orientation.z = world_from_camera_quat.z();
+        odometry.pose.pose.orientation.w = world_from_camera_quat.w();
 
         // Create the pose message to pack inside the path message.
         geometry_msgs::PoseStamped pose_stamped;

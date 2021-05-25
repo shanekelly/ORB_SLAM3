@@ -49,3 +49,5 @@ cmake-build-debug/
 
 *.pyc
 *.osa
+
+results/
