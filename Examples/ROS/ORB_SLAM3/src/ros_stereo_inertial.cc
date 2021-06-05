@@ -33,6 +33,8 @@
 
 #include<opencv2/core/core.hpp>
 
+#include <boost/date_time/posix_time/posix_time_types.hpp>
+
 #include"../../../include/System.h"
 #include"../include/ImuTypes.h"
 #include "../include/Converter.h"
@@ -41,6 +43,14 @@ using namespace std;
 
 ros::Publisher pub_path;
 nav_msgs::Path path;
+
+static uint64_t num_images_tracked = 0;
+static uint64_t num_left_frames_received = 0;
+static uint64_t num_right_frames_received = 0;
+static uint64_t num_left_frames_discarded = 0;
+static uint64_t num_right_frames_discarded = 0;
+
+static std::ofstream times_file{"results/orb_times.txt"};
 
 class ImuGrabber
 {
@@ -160,7 +170,7 @@ int main(int argc, char **argv)
 
   // Save camera trajectory
   // SLAM.SaveKeyFrameTrajectoryTUM("results/orb-k.txt");
-  SLAM.SaveTrajectoryTUM("results/orb.txt");
+  SLAM.SaveTrajectoryTUM("results/orb_traj.txt");
 
   ros::shutdown();
 
@@ -171,18 +181,24 @@ int main(int argc, char **argv)
 
 void ImageGrabber::GrabImageLeft(const sensor_msgs::ImageConstPtr &img_msg)
 {
+  // printf("Left: %u\n", ++num_left_frames_received);
   mBufMutexLeft.lock();
-  if (!imgLeftBuf.empty())
+  if (!imgLeftBuf.empty()) {
     imgLeftBuf.pop();
+    ++num_left_frames_discarded;
+  }
   imgLeftBuf.push(img_msg);
   mBufMutexLeft.unlock();
 }
 
 void ImageGrabber::GrabImageRight(const sensor_msgs::ImageConstPtr &img_msg)
 {
+  // printf("Right: %u\n", ++num_right_frames_received);
   mBufMutexRight.lock();
-  if (!imgRightBuf.empty())
+  if (!imgRightBuf.empty()) {
     imgRightBuf.pop();
+    ++num_right_frames_discarded;
+  }
   imgRightBuf.push(img_msg);
   mBufMutexRight.unlock();
 }
@@ -286,7 +302,16 @@ void ImageGrabber::SyncWithImu()
       }
 
       // Track with stereo images. Get new estimate for camera_from_world transform.
+      boost::posix_time::ptime t_start =  boost::posix_time::microsec_clock::local_time();
       const cv::Mat Tcw = mpSLAM->TrackStereo(imLeft,imRight,tImLeft,vImuMeas);
+      boost::posix_time::ptime t_end =  boost::posix_time::microsec_clock::local_time();
+
+      double total_time_sec = (t_end - t_start).total_microseconds() * 1e-6;
+      times_file << total_time_sec << std::endl;
+
+      // printf("Time: %.4f,  Frame: %u,  Buf sizes: (%d, %d),  Frames discarded: (%d, %d)\n",
+      //        total_time_sec, ++num_images_tracked, imgLeftBuf.size(), imgRightBuf.size(),
+      //        num_left_frames_discarded, num_right_frames_discarded);
 
       if (!Tcw.empty()) {
         const Eigen::Matrix<double,4,4> camera_from_world = ORB_SLAM3::Converter::toMatrix4d(Tcw);

@@ -766,6 +766,11 @@ bool Tracking::ParseORBParamFile(cv::FileStorage &fSettings)
     {
         maskLFname = node.operator std::string();
         mMaskL = cv::imread(maskLFname, CV_LOAD_IMAGE_GRAYSCALE);
+        if (mMaskL.empty()) {
+          stringstream err_msg;
+          err_msg << "Image mask loaded from " << maskLFname << " is empty." << std::endl;
+          throw std::runtime_error(err_msg.str());
+        }
         cv::threshold(mMaskL, mMaskL, 127, 255, CV_THRESH_BINARY);
     }
     else
@@ -778,6 +783,11 @@ bool Tracking::ParseORBParamFile(cv::FileStorage &fSettings)
     {
         maskRFname = node.operator std::string();
         mMaskR = cv::imread(maskRFname, CV_LOAD_IMAGE_GRAYSCALE);
+        if (mMaskR.empty()) {
+          stringstream err_msg;
+          err_msg << "Image mask loaded from " << maskRFname << " is empty." << std::endl;
+          throw std::runtime_error(err_msg.str());
+        }
         cv::threshold(mMaskR, mMaskR, 127, 255, CV_THRESH_BINARY);
     }
     else
