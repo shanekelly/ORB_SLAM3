@@ -6,51 +6,51 @@
 Camera.type: "KannalaBrandt8"
 
 # Left Camera calibration and distortion parameters (OpenCV)
-Camera.fx: 350.4753654456
-Camera.fy: 350.3589687465
-Camera.cx: 375.609030533
-Camera.cy: 279.1048548603
+Camera.fx: 284.54730224609375
+Camera.fy: 285.53131103515625
+Camera.cx: 420.948486328125
+Camera.cy: 393.4858093261719
 
 # Kannala-Brandt distortion parameters
-Camera.k1: -0.0436716079
-Camera.k2: 0.0054433184
-Camera.k3: -0.005698747
-Camera.k4: 0.0012933061
+Camera.k1: -0.0015544580528512597
+Camera.k2: 0.03598850965499878
+Camera.k3: -0.03366529941558838
+Camera.k4: 0.0053024617955088615
 
 # Right Camera calibration and distortion parameters (OpenCV)
-Camera2.fx: 350.9913606911
-Camera2.fy: 350.7739911093
-Camera2.cx: 341.6814684415
-Camera2.cy: 264.0445336872
+Camera2.fx: 284.7732849121094
+Camera2.fy: 285.76220703125
+Camera2.cx: 431.4237976074219
+Camera2.cy: 399.8611145019531
 
 # Kannala-Brandt distortion parameters
-Camera2.k1: -0.04245936
-Camera2.k2: 0.00656172
-Camera2.k3: -0.0076956554
-Camera2.k4: 0.0020906248
+Camera2.k1: -0.0018033110536634922
+Camera2.k2: 0.03722317889332771
+Camera2.k3: -0.03512553870677948
+Camera2.k4: 0.0057324911467731
 
 # Transformation matrix from right camera to left camera
 Tlr: !!opencv-matrix
   rows: 3
   cols: 4
   dt: f
-  data: [0.99999238, -0.00287225, -0.0026431 ,  0.09893247,
-         0.00286051,  0.99998608, -0.00443312,  0.0006257 ,
-         0.0026558 ,  0.00442552,  0.99998668,  0.00035044]
+  data: [9.99991778e-01,  1.00629666e-03,  3.98583936e-03,  6.40139000e-02,
+        -1.00587931e-03,  9.99999716e-01, -1.06711478e-04,  1.26064000e-04,
+        -3.98594470e-03,  1.02701304e-04,  9.99992278e-01, -5.33140000e-04]
 
 # Lapping area between images
 Camera.lappingBegin: 0
-Camera.lappingEnd: 719
+Camera.lappingEnd: 847
 
 Camera2.lappingBegin: 0
-Camera2.lappingEnd: 719
+Camera2.lappingEnd: 847
 
 # Camera resolution
-Camera.width: 720
-Camera.height: 540
+Camera.width: 848
+Camera.height: 800
 
 # Camera frames per second
-Camera.fps: 20.0
+Camera.fps: 30.0
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
 Camera.RGB: 1
@@ -65,16 +65,16 @@ Tbc: !!opencv-matrix
    rows: 4
    cols: 4
    dt: f
-   data: [-0.99996657,  0.00375511,  0.00726401,  0.04480651,
-          -0.00725609,  0.0021197 , -0.99997143,  0.02823978,
-          -0.0037704 , -0.9999907 , -0.00209238, -0.07883017,
-           0.        ,  0.        ,  0.        ,  1.]
+   data: [-9.99977443e-01, -1.62180057e-04,  6.77312944e-03,  1.06990000e-02,
+           1.85322311e-04, -9.99994542e-01,  3.41628768e-03, -3.96580000e-06,
+           6.77253574e-03,  3.41746448e-03,  9.99971621e-01, -1.44929000e-04,
+           0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  1.00000000e+00]
 
 # IMU noise (Use those from VINS-mono)
-IMU.NoiseGyro: 0.019 # 0.004 (VINS) # 0.00016 (TUM) # 0.00016    # rad/s^0.5
-IMU.NoiseAcc:  0.19 # 0.04 (VINS) # 0.0028 (TUM) # 0.0028     # m/s^1.5
-IMU.GyroWalk:  0.00266 # 0.000022 (VINS and TUM) rad/s^1.5
-IMU.AccWalk:   0.043 # 0.0004 (VINS) # 0.00086 # 0.00086    # m/s^2.5
+IMU.NoiseGyro: 2.268e-03 # 0.004 (VINS) # 0.00016 (TUM) # 0.00016    # rad/s^0.5
+IMU.NoiseAcc:  8.182e-03 # 0.04 (VINS) # 0.0028 (TUM) # 0.0028     # m/s^1.5
+IMU.GyroWalk:  7.071e-04 # 0.000022 (VINS and TUM) rad/s^1.5
+IMU.AccWalk:   9.999e-03 # 0.0004 (VINS) # 0.00086 # 0.00086    # m/s^2.5
 IMU.Frequency: 200
 
 #--------------------------------------------------------------------------------------------
@@ -100,10 +100,8 @@ ORBextractor.nLevels: 8
 ORBextractor.iniThFAST: 20 # 20
 ORBextractor.minThFAST: 7 # 7
 
-# ORBextractor.maskLFname: "/home/sgk/eth/research/rowesys-vio/masks/alphasense/left_mask.png"
-# ORBextractor.maskRFname: "/home/sgk/eth/research/rowesys-vio/masks/alphasense/right_mask.png"
-ORBextractor.maskLFname: "/home/sgk/eth/research/rowesys-vio/masks/alphasense/left_mask.png"
-ORBextractor.maskRFname: "/home/sgk/eth/research/rowesys-vio/masks/alphasense/right_mask.png"
+ORBextractor.maskLFname: "/home/sgk/eth/research/rowesys-vio/masks/t265/22-5-deg/left_mask.png"
+ORBextractor.maskRFname: "/home/sgk/eth/research/rowesys-vio/masks/t265/22-5-deg/right_mask.png"
 
 #--------------------------------------------------------------------------------------------
 # Viewer Parameters

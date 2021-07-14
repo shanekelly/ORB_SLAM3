@@ -94,24 +94,26 @@ int main(int argc, char **argv)
   ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info);
   pub_path = n.advertise<nav_msgs::Path>("path", 1000);
 
-  bool bEqual = false;
-  if(argc < 4 || argc > 5)
+  if(argc != 6)
   {
-    cerr << endl << "Usage: rosrun ORB_SLAM3 Stereo_Inertial path_to_vocabulary path_to_settings do_rectify [do_equalize]" << endl;
+    cerr << endl << "Usage: rosrun ORB_SLAM3 Stereo_Inertial path_to_vocabulary path_to_settings do_rectify do_equalize use_viewer" << endl;
     ros::shutdown();
     return 1;
   }
 
   std::string sbRect(argv[3]);
-  if(argc==5)
-  {
-    std::string sbEqual(argv[4]);
-    if(sbEqual == "true")
-      bEqual = true;
-  }
+
+  bool bEqual = false;
+  std::string sbEqual(argv[4]);
+  if(sbEqual == "true")
+    bEqual = true;
+
+  bool bUseViewer = false;
+  std::string sbUseViewer(argv[5]);
+  if(sbUseViewer == "true")
+    bUseViewer = true;
 
   // Create SLAM system. It initializes all system threads and gets ready to process frames.
-  const bool bUseViewer = true;
   ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::IMU_STEREO,bUseViewer);
 
   ImuGrabber imugb;
@@ -169,7 +171,7 @@ int main(int argc, char **argv)
   SLAM.Shutdown();
 
   // Save camera trajectory
-  // SLAM.SaveKeyFrameTrajectoryTUM("results/orb-k.txt");
+  SLAM.SaveKeyFrameTrajectoryTUM("results/orb-k.txt");
   SLAM.SaveTrajectoryTUM("results/orb_traj.txt");
 
   ros::shutdown();

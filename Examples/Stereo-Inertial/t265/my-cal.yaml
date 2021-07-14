@@ -6,37 +6,37 @@
 Camera.type: "KannalaBrandt8"
 
 # Left Camera calibration and distortion parameters (OpenCV)
-Camera.fx: 284.54730224609375
-Camera.fy: 285.53131103515625
-Camera.cx: 420.948486328125
-Camera.cy: 393.4858093261719
+Camera.fx: 287.67233586332935
+Camera.fy: 287.77426298424706
+Camera.cx: 421.58363773940675
+Camera.cy: 394.3385953090778
 
 # Kannala-Brandt distortion parameters
-Camera.k1: -0.0015544580528512597
-Camera.k2: 0.03598850965499878
-Camera.k3: -0.03366529941558838
-Camera.k4: 0.0053024617955088615
+Camera.k1: -0.012372057296136389
+Camera.k2: 0.05688636449431429
+Camera.k3: -0.05285715772628199
+Camera.k4: 0.010799943603548193
 
 # Right Camera calibration and distortion parameters (OpenCV)
-Camera2.fx: 284.7732849121094
-Camera2.fy: 285.76220703125
-Camera2.cx: 431.4237976074219
-Camera2.cy: 399.8611145019531
+Camera2.fx: 287.57932284173796
+Camera2.fy: 287.7363910902285
+Camera2.cx: 432.5547634538379
+Camera2.cy: 399.4949121719665
 
 # Kannala-Brandt distortion parameters
-Camera2.k1: -0.0018033110536634922
-Camera2.k2: 0.03722317889332771
-Camera2.k3: -0.03512553870677948
-Camera2.k4: 0.0057324911467731
+Camera2.k1: -0.012241361198737845
+Camera2.k2: 0.055520847735630485
+Camera2.k3: -0.051649008567668075
+Camera2.k4: 0.010575476403826634
 
 # Transformation matrix from right camera to left camera
 Tlr: !!opencv-matrix
   rows: 3
   cols: 4
   dt: f
-  data: [9.99991778e-01,  1.00629666e-03,  3.98583936e-03,  6.40139000e-02,
-        -1.00587931e-03,  9.99999716e-01, -1.06711478e-04,  1.26064000e-04,
-        -3.98594470e-03,  1.02701304e-04,  9.99992278e-01, -5.33140000e-04]
+  data: [ 0.9999876 ,  0.00080839,  0.00491377,  0.06370289,
+         -0.00079689,  0.99999694, -0.002342  , -0.0015336 ,
+         -0.00491564,  0.00233806,  0.99998519,  0.00059949 ]
 
 # Lapping area between images
 Camera.lappingBegin: 0
@@ -50,7 +50,7 @@ Camera.width: 848
 Camera.height: 800
 
 # Camera frames per second
-Camera.fps: 20.0
+Camera.fps: 30.0
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
 Camera.RGB: 1
@@ -65,10 +65,10 @@ Tbc: !!opencv-matrix
    rows: 4
    cols: 4
    dt: f
-   data: [-9.99977443e-01, -1.62180057e-04,  6.77312944e-03,  1.06990000e-02,
-           1.85322311e-04, -9.99994542e-01,  3.41628768e-03, -3.96580000e-06,
-           6.77253574e-03,  3.41746448e-03,  9.99971621e-01, -1.44929000e-04,
-           0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  1.00000000e+00]
+   data: [-0.99999395, -0.00147596,  0.00314862,  0.01177497,
+           0.00148123, -0.99999751,  0.00167191,  0.00498236,
+           0.00314614,  0.00167656,  0.99999365,  0.00570402,
+           0.,          0.,          0.,          1.         ]
 
 # IMU noise (Use those from VINS-mono)
 IMU.NoiseGyro: 2.268e-03 # 0.004 (VINS) # 0.00016 (TUM) # 0.00016    # rad/s^0.5
@@ -82,7 +82,7 @@ IMU.Frequency: 200
 #--------------------------------------------------------------------------------------------
 
 # Whether or not to detect and close loops. 1 to enable, 0 to disable.
-System.EnableLoopClosing: 0
+System.EnableLoopClosing: 1
 
 # ORB Extractor: Number of features per image
 ORBextractor.nFeatures: 1000 # Tested with 1250
@@ -100,8 +100,8 @@ ORBextractor.nLevels: 8
 ORBextractor.iniThFAST: 20 # 20
 ORBextractor.minThFAST: 7 # 7
 
-ORBextractor.maskLFname: "/home/sgk/eth/research/rowesys-vio/masks/t265/45-deg_left_mask.png"
-ORBextractor.maskRFname: "/home/sgk/eth/research/rowesys-vio/masks/t265/45-deg_right_mask.png"
+ORBextractor.maskLFname: "/home/sgk/eth/research/rowesys-vio/masks/t265/45-deg/left_mask.png"
+ORBextractor.maskRFname: "/home/sgk/eth/research/rowesys-vio/masks/t265/45-deg/right_mask.png"
 
 #--------------------------------------------------------------------------------------------
 # Viewer Parameters
